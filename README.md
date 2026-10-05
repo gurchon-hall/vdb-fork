@@ -28,7 +28,7 @@ Store user accounts (decks/inventory) using:
 ### FOR DEVELOPMENT
 
 Below is local deployment for test/development for Linux.
-On Windows and MacOS commands may be different (I recommend using WSL on Windows, it works well with commands below).
+On Windows and MacOS commands may be different (I recommend using WSL on Windows, it works well with commands below, or use `scripts/run.ps1` described below).
 
 ```
     git clone https://github.com/smeea/vdb.git
@@ -36,6 +36,43 @@ On Windows and MacOS commands may be different (I recommend using WSL on Windows
 ```
 
 First step is to install `uv` (https://docs.astral.sh/uv/) for backend dependencies, and `npm` (https://docs.npmjs.com/) for frontend.
+
+#### WITH HELPER SCRIPTS
+
+`scripts/run.sh` (Linux/MacOS/WSL) and `scripts/run.ps1` (Windows PowerShell) wrap the steps below:
+```
+    ./scripts/run.sh setup                               # ONLY ON FIRST RUN: install deps, create backend/.env and database
+    ./scripts/run.sh dev                                 # start backend + frontend
+```
+
+On Windows use `.\scripts\run.ps1` instead of `./scripts/run.sh` (`dev` opens backend and frontend in separate windows).
+If PowerShell refuses to run the script, allow it for the current session with `Set-ExecutionPolicy -Scope Process Bypass`.
+
+Other commands:
+```
+    install                                              # install backend (uv) and frontend (npm) deps
+    db                                                   # create migrations folder if missing, then migrate + upgrade
+    db-upgrade                                           # migrate + upgrade after models change
+    backend                                              # start only backend (http://localhost:5000)
+    frontend                                             # start only frontend (http://localhost:5173)
+    build                                                # build frontend for production (frontend/dist)
+    preview                                              # serve production build locally
+    analyze                                              # frontend bundle size visualizer
+    lint                                                 # biome (frontend) + ruff (backend) checks
+    fix                                                  # auto-fix/format with biome and ruff
+    update-cards                                         # download upstream resources and regenerate them
+    password $ACCOUNT_NAME [$PASSWORD|x]                 # change password (x = random)
+    playtest-admin $ACCOUNT_NAME                         # toggle playtest admin status
+    clean                                                # remove node_modules, .venv, dist (keeps app.db)
+```
+
+Notes:
+
+* npm 12+ refuses packages fetched from URL by default (`xlsx` comes from cdn.sheetjs.com), so install with `npm install --allow-remote=all` (scripts do it already).
+* On Windows set `PYTHONUTF8=1` before running backend, otherwise JSON files are read with wrong encoding (scripts do it already).
+* `.gitattributes` forces LF line endings, which biome expects. If you cloned before it was added on Windows, re-checkout files to fix `lint` errors about line endings.
+
+#### MANUALLY
 
 Start backend:
 ```
@@ -49,7 +86,7 @@ Start backend:
 Start frontend:
 ```
     cd frontend
-    npm install                                          # ONLY ON FIRST RUN
+    npm install --allow-remote=all                       # ONLY ON FIRST RUN
     npm start
 ```
 
