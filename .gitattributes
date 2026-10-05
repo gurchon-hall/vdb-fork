@@ -1,0 +1,2 @@
+# Always check out text files with LF (biome expects LF; overrides core.autocrlf on Windows)
+* text=auto eol=lf
